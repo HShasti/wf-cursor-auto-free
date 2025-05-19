@@ -2,7 +2,13 @@ import os
 
 class Language:
     def __init__(self):
-        self.current_language = "cn"  # Default language is Chinese
+        # بررسی تنظیمات زبان در فایل .env
+        env_language = os.getenv("APP_LANGUAGE", "").strip().lower()
+        if env_language in ["en", "cn"]:
+            self.current_language = env_language  # استفاده از زبان تنظیم شده در .env
+        else:
+            self.current_language = "cn"  # زبان پیش‌فرض چینی است
+            
         self.translations = {
             "cn": {
                 # System messages

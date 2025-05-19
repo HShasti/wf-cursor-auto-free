@@ -224,13 +224,16 @@ class CursorProKeepAlive:
     def save_account_info(self, email: str = None, password: str = None, 
                          access_token: str = None, refresh_token: str = None) -> bool:
         """
-        将账号信息保存为JSON文件
+        Save account information to both JSON and TXT files
         
         Args:
-            email: 注册邮箱
-            password: 账号密码
-            access_token: 访问令牌
-            refresh_token: 刷新令牌
+            email: Registration email
+            password: Account password
+            access_token: Access token
+            refresh_token: Refresh token
+            
+        Returns:
+            bool: Whether the operation was successful
         """
         email = email or self.account
         password = password or self.password
@@ -239,37 +242,63 @@ class CursorProKeepAlive:
         
         logging.info(get_translation("saving_account_info"))
         
-        # 创建accounts目录（如果不存在）
+        # Create accounts directory if it doesn't exist
         accounts_dir = "accounts"
         if not os.path.exists(accounts_dir):
             os.makedirs(accounts_dir)
         
-        # 生成文件名（使用时间戳确保唯一性）
+        # Generate timestamp for unique filenames
         timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
-        filename = f"cursor_account_{timestamp}.json"
-        filepath = os.path.join(accounts_dir, filename)
         
-        # 创建账号信息字典
+        # Create JSON filename with timestamp to ensure uniqueness
+        json_filename = f"cursor_account_{timestamp}.json"
+        json_filepath = os.path.join(accounts_dir, json_filename)
+        
+        # Create TXT filename based on email
+        txt_filename = email.replace('@', '_at_').replace('.', '_dot_') + '.txt'
+        txt_filepath = os.path.join(accounts_dir, txt_filename)
+        
+        # Current date and time
+        current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        
+        # Create account info dictionary for JSON
         account_info = {
             "email": email,
             "password": password,
             "access_token": access_token,
             "refresh_token": refresh_token,
-            "created_time": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            "created_time": current_time
         }
         
-        # 写入JSON文件
+        # Create TXT content in English
+        txt_content = f"""Cursor Account Information
+==============================
+Date Created: {current_time}
+Email: {email}
+Password: {password}
+==============================
+"""
+        
         try:
-            with open(filepath, "w", encoding="utf-8") as f:
+            # Write JSON file
+            with open(json_filepath, "w", encoding="utf-8") as f:
                 json.dump(account_info, f, indent=4, ensure_ascii=False)
-            logging.info(get_translation("account_saved_successfully", path=filepath))
-            # 在控制台打印账号信息和保存路径
+                
+            # Write TXT file with email as filename
+            with open(txt_filepath, "w", encoding="utf-8") as f:
+                f.write(txt_content)
+                
+            logging.info(get_translation("account_saved_successfully", path=json_filepath))
+            
+            # Print account info and save paths to console
             print("\n" + "="*50)
-            print(f"📁 {get_translation('account_saved_successfully', path=filepath)}")
+            print(f"📁 {get_translation('account_saved_successfully', path=json_filepath)}")
+            print(f"📁 Text file saved to: {txt_filepath}")
             print(f"📧 Email: {email}")
             print(f"🔑 Password: {password}")
             print("="*50 + "\n")
             return True
+            
         except Exception as e:
             logging.error(get_translation("account_save_failed", error=str(e)))
             return False

@@ -44,121 +44,7 @@ jobs:
         name: CursorProGUI-Windows
         path: dist/CursorProGUI.exe
 
-  build-macos-arm64:
-    runs-on: macos-latest
-    
-    steps:
-    - uses: actions/checkout@v2
-    
-    - name: Set up Python
-      uses: actions/setup-python@v2
-      with:
-        python-version: '3.x'
-    
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install pyinstaller
-        pip install -r requirements.txt
-        
-    - name: Build MacOS ARM executable
-      run: |
-        pyinstaller CursorKeepAlive.spec
-        
-    - name: Build MacOS ARM GUI executable
-      run: |
-        pyinstaller CursorProGUI.spec
-        
-    - name: Upload MacOS ARM artifact
-      uses: actions/upload-artifact@v4
-      with:
-        name: CursorPro-MacOS-ARM64
-        path: dist/CursorPro
-        
-    - name: Upload MacOS ARM GUI artifact
-      uses: actions/upload-artifact@v4
-      with:
-        name: CursorProGUI-MacOS-ARM64
-        path: dist/CursorProGUI
-
-  build-linux:
-    runs-on: ubuntu-22.04
-    
-    steps:
-    - uses: actions/checkout@v2
-    
-    - name: Set up Python
-      uses: actions/setup-python@v2
-      with:
-        python-version: '3.x'
-    
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install pyinstaller
-        pip install -r requirements.txt
-        
-    - name: Build Linux executable
-      run: |
-        pyinstaller CursorKeepAlive.spec
-        
-    - name: Build Linux GUI executable
-      run: |
-        pyinstaller CursorProGUI.spec
-        
-    - name: Upload Linux artifact
-      uses: actions/upload-artifact@v4
-      with:
-        name: CursorPro-Linux
-        path: dist/CursorPro
-        
-    - name: Upload Linux GUI artifact
-      uses: actions/upload-artifact@v4
-      with:
-        name: CursorProGUI-Linux
-        path: dist/CursorProGUI
-
-  build-macos-intel:
-    runs-on: macos-latest
-
-    steps:
-    - uses: actions/checkout@v2
-
-    - name: Set up Python
-      uses: actions/setup-python@v2
-      with:
-        python-version: '3.x'
-
-    - name: Install dependencies
-      run: |
-        arch -x86_64 pip3 install --upgrade pip
-        arch -x86_64 pip3 install pyinstaller
-        arch -x86_64 pip3 install -r requirements.txt
-
-    - name: Build MacOS Intel executable
-      env:
-        TARGET_ARCH: 'x86_64'
-      run: |
-        arch -x86_64 python3 -m PyInstaller CursorKeepAlive.spec
-        
-    - name: Build MacOS Intel GUI executable
-      env:
-        TARGET_ARCH: 'x86_64'
-      run: |
-        arch -x86_64 python3 -m PyInstaller CursorProGUI.spec
-        
-    - name: Upload MacOS Intel artifact
-      uses: actions/upload-artifact@v4
-      with:
-        name: CursorPro-MacOS-Intel
-        path: dist/CursorPro
-        
-    - name: Upload MacOS Intel GUI artifact
-      uses: actions/upload-artifact@v4
-      with:
-        name: CursorProGUI-MacOS-Intel
-        path: dist/CursorProGUI
-
+  
   create-release:
     needs: [build-windows, build-macos-arm64, build-linux, build-macos-intel]
     runs-on: ubuntu-22.04
@@ -189,12 +75,6 @@ jobs:
           files: |
             artifacts/CursorPro-Windows.zip
             artifacts/CursorProGUI-Windows.zip
-            artifacts/CursorPro-MacOS-ARM64.zip
-            artifacts/CursorProGUI-MacOS-ARM64.zip
-            artifacts/CursorPro-Linux.zip
-            artifacts/CursorProGUI-Linux.zip
-            artifacts/CursorPro-MacOS-Intel.zip
-            artifacts/CursorProGUI-MacOS-Intel.zip
 
         env:
           GITHUB_TOKEN: ${{ secrets.TOKEN }}
