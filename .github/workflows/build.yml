@@ -46,7 +46,7 @@ jobs:
 
   
   create-release:
-    needs: [build-windows, build-macos-arm64, build-linux, build-macos-intel]
+    needs: [build-windows]
     runs-on: ubuntu-22.04
     if: startsWith(github.ref, 'refs/tags/')
     
@@ -61,13 +61,6 @@ jobs:
           cd artifacts
           zip -r CursorPro-Windows.zip CursorPro-Windows/
           zip -r CursorProGUI-Windows.zip CursorProGUI-Windows/
-          zip -r CursorPro-MacOS-ARM64.zip CursorPro-MacOS-ARM64/
-          zip -r CursorProGUI-MacOS-ARM64.zip CursorProGUI-MacOS-ARM64/
-          zip -r CursorPro-Linux.zip CursorPro-Linux/
-          zip -r CursorProGUI-Linux.zip CursorProGUI-Linux/
-          zip -r CursorPro-MacOS-Intel.zip CursorPro-MacOS-Intel/
-          zip -r CursorProGUI-MacOS-Intel.zip CursorProGUI-MacOS-Intel/
-
 
       - name: Create Release
         uses: softprops/action-gh-release@v1
